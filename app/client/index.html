@@ -5,28 +5,37 @@
 </head>
 <body>
     <h2>WebSocket Chat</h2>
+    <h2>Your ID: <span id="ws-id"></span> </h2>
     <input id="messageInput" type="text" placeholder="Type a message" />
     <button onclick="sendMessage()">Send</button>
     <ul id="messages"></ul>
 
     <script>
-        const socket = new WebSocket("ws://localhost:8000/ws");
-
+        // Generate a unique client ID using timestamp
+        var client_id = Date.now();
+    
+        // Display the client ID in the <span id="ws-id">
+        document.getElementById("ws-id").textContent = client_id;
+    
+        // Connect to the WebSocket using the client ID in the URL
+        var socket = new WebSocket(`ws://localhost:8000/ws/${client_id}`);
+    
         socket.onopen = () => {
-            console.log("Connected to WebSocket");
+            console.log("Connected to WebSocket as", client_id);
         };
-
+    
         socket.onmessage = (event) => {
             const li = document.createElement("li");
             li.innerText = event.data;
             document.getElementById("messages").appendChild(li);
         };
-
+    
         function sendMessage() {
             const input = document.getElementById("messageInput");
             socket.send(input.value);
             input.value = "";
         }
     </script>
+    
 </body>
 </html>
